@@ -25,23 +25,24 @@ def get_compiled_bert_model(model_type):
 
     return model
 
+tokenizer = config.TOKENIZER
+bert = BertModel()
+bert.compile_model()
+model = bert.model
+model.load_weights(config.MODEL_WEIGHTS_PATH)
+
 app = FastAPI()
 
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-
+    
 
 @app.post("/predict/")
 def predict(s_obj: Sentence):
     
 
-    tokenizer = config.TOKENIZER
-    bert = BertModel()
-    bert.compile_model()
-    model = bert.model
-    model.load_weights(config.MODEL_WEIGHTS_PATH)
     
     output = tf.nn.softmax(model(tokenizer(s_obj.sentence_1,s_obj.sentence_2,max_length=128,return_tensors='tf'))).numpy()[0]
     print(output)
